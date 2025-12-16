@@ -197,6 +197,52 @@ def get_last_five_characters(text):
     return text[-5:] if len(text) >= 5 else text
 
 
+def get_first_word(text):
+    """Extract the first word from text."""
+    if is_empty_value(text):
+        return ''
+    text = str(text).strip()
+    words = text.split()
+    return words[0] if words else ''
+
+
+def get_second_word(text):
+    """Extract the second word from text."""
+    if is_empty_value(text):
+        return ''
+    text = str(text).strip()
+    words = text.split()
+    return words[1] if len(words) >= 2 else ''
+
+
+def get_third_word(text):
+    """Extract the third word from text."""
+    if is_empty_value(text):
+        return ''
+    text = str(text).strip()
+    words = text.split()
+    return words[2] if len(words) >= 3 else ''
+
+
+def extract_last_five_digits(series):
+    """Extract the last five digits from phone numbers."""
+    return series.astype(str).apply(
+        lambda x: x[-5:] if not is_empty_value(x) and len(x) >= 5 else ('' if is_empty_value(x) else x)
+    )
+
+
+def extract_email_domain(text):
+    """Extract the domain from an email address (text after '@')."""
+    if is_empty_value(text):
+        return ''
+    text = str(text).strip()
+    if '@' in text:
+        parts = text.split('@')
+        if len(parts) >= 2:
+            return parts[-1]  # Get the part after the last '@'
+    return ''
+
+
 def get_output_filename():
     """Return the output filename."""
     return 'output-hashed.csv'
@@ -229,15 +275,28 @@ def main():
         # Add derived columns
         data['Org Name First 5 Letters'] = data['Org Name'].apply(get_first_five_characters)
         data['Org Name Last 5 Characters'] = data['Org Name'].apply(get_last_five_characters)
+        data['Org Name First Word'] = data['Org Name'].apply(get_first_word)
+        data['Org Name Second Word'] = data['Org Name'].apply(get_second_word)
+        data['Org Name Third Word'] = data['Org Name'].apply(get_third_word)
     
     # Process Org Address
     if 'Org Address' in data.columns:
         data['Org Address'] = data['Org Address'].apply(remove_street_types)
+        # Add derived columns for street name words
+        data['Street Name First Word'] = data['Org Address'].apply(get_first_word)
+        data['Street Name Second Word'] = data['Org Address'].apply(get_second_word)
+        data['Street Name Third Word'] = data['Org Address'].apply(get_third_word)
     
     # Process Phone Number
     if 'Phone Number' in data.columns:
         data['Phone Number'] = clean_phone_number(data['Phone Number'])
         data['Phone Number'] = extract_last_nine_digits(data['Phone Number'])
+        # Add derived column for last 5 digits (after extracting 9 digits)
+        data['Phone Number Last 5 Digits'] = extract_last_five_digits(data['Phone Number'])
+    
+    # Process Company Email - extract domain
+    if 'Company Email' in data.columns:
+        data['Email Domain'] = data['Company Email'].apply(extract_email_domain)
     
     # Replace NaN values and 'nan' strings with empty strings
     data = data.fillna('')
@@ -254,6 +313,14 @@ def main():
         'Company Website',
         'Org Name First 5 Letters',
         'Org Name Last 5 Characters',
+        'Org Name First Word',
+        'Org Name Second Word',
+        'Org Name Third Word',
+        'Street Name First Word',
+        'Street Name Second Word',
+        'Street Name Third Word',
+        'Phone Number Last 5 Digits',
+        'Email Domain',
     ]
     
     for column in columns_to_hash:

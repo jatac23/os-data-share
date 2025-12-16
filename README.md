@@ -42,24 +42,37 @@ Run the Python hasher file found in this repository (`opensolar_hasher.py`). Thi
 - Remove common company suffixes (Ltd, Pty, Co., Inc, LLC, Corp, Corporation, Limited, Incorporated, Company, and variations)
   - Handles variations with/without parentheses, periods, and spaces
   - Processes suffixes twice to catch all variations
-- Create two derived columns:
+- Create five derived columns:
   - **Org Name First 5 Letters**: First 5 characters (including spaces)
   - **Org Name Last 5 Characters**: Last 5 characters
+  - **Org Name First Word**: First word of the organization name
+  - **Org Name Second Word**: Second word of the organization name
+  - **Org Name Third Word**: Third word of the organization name
 
 #### 3. Org Address Processing
 - Remove street type suffixes (Street, St., Avenue, Ave., Road, Rd., and variations)
 - Remove commas and periods
 - Clean up extra spaces
+- Create three derived columns:
+  - **Street Name First Word**: First word of the street name
+  - **Street Name Second Word**: Second word of the street name
+  - **Street Name Third Word**: Third word of the street name
 
 #### 4. Phone Number Processing
 - Remove all non-numerical characters
 - Extract the last nine digits
+- Create one derived column:
+  - **Phone Number Last 5 Digits**: Last 5 digits from the 9-digit phone number
 
-#### 5. Data Normalization
+#### 5. Company Email Processing
+- Create one derived column:
+  - **Email Domain**: The web domain of the email address (text after '@')
+
+#### 6. Data Normalization
 - Replace NaN values with empty strings
 - Replace 'nan' strings with empty strings
 
-#### 6. Data Hashing
+#### 7. Data Hashing
 The following columns are hashed using SHA256 (replacing original values):
 - Org Name
 - Org Address
@@ -68,6 +81,14 @@ The following columns are hashed using SHA256 (replacing original values):
 - Company Website
 - Org Name First 5 Letters
 - Org Name Last 5 Characters
+- Org Name First Word
+- Org Name Second Word
+- Org Name Third Word
+- Street Name First Word
+- Street Name Second Word
+- Street Name Third Word
+- Phone Number Last 5 Digits
+- Email Domain
 
 ### Running the Script
 
